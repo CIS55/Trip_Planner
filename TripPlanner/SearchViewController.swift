@@ -10,26 +10,6 @@ import UIKit
 import CoreLocation
 import SwiftyJSON
 
-struct JsonReturn : Decodable {
-    let results : [Result]
-}
-
-struct Result: Decodable {
-    let Geometries : Geometry
-    let name : String
-    let rating : String
-    let vicinity: String
-}
-
-struct Geometry: Decodable {
-    let locations : location
-}
-
-struct location: Decodable {
-    let lat : String
-    let lng : String
-}
-
 class SearchViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate  {
 
     @IBOutlet weak var radiusLabel: UILabel!
@@ -48,27 +28,44 @@ class SearchViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
     }
     
     @IBAction func SearchButton(_ sender: Any) {
-        let link1 = "https://maps.googleapis.com/maps/api/place/search/json?location=" + String(latitude) + "," + String(longitude)
-        let link2 = "&radius=" + radiusLabel.text! + "&type=" + type + "&key=AIzaSyBndTX7QCf6aFhY6DJMsqX9MHxp-6JssvA"
-        let link = link1 + link2
+        let link = "https://maps.googleapis.com/maps/api/place/search/json?location=\(latitude),\(longitude)&radius=" + radiusLabel.text! + "&type=\(type)&key=AIzaSyBndTX7QCf6aFhY6DJMsqX9MHxp-6JssvA"
         guard let url = URL(string: link)
             else { return }
         
         let session = URLSession.shared
         session.dataTask(with: url) { (data, response, error) in
+            /*
             if let response = response {
-                //print(response)
+                print(response)
             }
+            */
             
             guard let data = data else {return}
             
                 do {
-                    //let json = try JSONSerialization.jsonObject(with: data, options: [])
                     
-                    //print(data[1].results[0].name)
+                    let json = JSON(data)
                     
-                    //let result = try JSONDecoder().decode(Result.self, from: data)
-                    //print(result.name)
+                    //Search results given radius and category
+                    //Write to data collection
+                    for k in 0..<json["results"].count
+                    {
+                        //name: property's name; lat, lng: latitude, longitude
+                        //rating: users' rating, vicinity, open: whether the property is open now(true or false)
+                        //if some value is missing (e.g. no rating value), returns default value or empty (Won't crash the app)
+                        let nameSearch : String = json["results"][k]["name"].stringValue
+                        let latSearch : Double = json["results"][k]["geometry"]["location"]["lat"].doubleValue
+                        let lngSearch : Double = json["results"][k]["geometry"]["location"]["lng"].doubleValue
+                        let ratingSearch : Double = json["results"][k]["rating"].doubleValue
+                        let vicinitySearch : String = json["results"][k]["vicinity"].stringValue
+                        let openSearch : Bool = json["results"][k]["opening_hours"]["open_now"].boolValue
+                        print(nameSearch)
+                        print(vicinitySearch)
+                        print(ratingSearch)
+                        print(latSearch,lngSearch)
+                        print(openSearch)
+                    }
+                    
                 } catch {
                     print(error)
                 }
@@ -104,22 +101,36 @@ class SearchViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
         
         let session = URLSession.shared
         session.dataTask(with: url) { (data, response, error) in
-            if let response = response {
-                //print(response)
+         /*
+             if let response = response {
+                print(response)
             }
-            
+         */
             if let data = data {
-                //print(data)
+                
                 do {
                     let json = JSON(data)
-                    if let sname : String = json["results"][0]["name"].string{
-                        print(sname)
+                    
+                    //After user click "Start Planning", this view loads the search results of TTD(Things To Do) for given address within 10km radius
+                    //Write to data collection
+                    for i in 0..<json["results"].count
+                    {
+                        //name: property's name; lat, lng: latitude, longitude
+                        //rating: users' rating, vicinity, open: whether the property is open now(true or false)
+                        //if some value is missing (e.g. no rating value), returns default value or empty (Won't crash the app)
+                        let nameTTD : String = json["results"][i]["name"].stringValue
+                        let latTTD : Double = json["results"][i]["geometry"]["location"]["lat"].doubleValue
+                        let lngTTD : Double = json["results"][i]["geometry"]["location"]["lng"].doubleValue
+                        let ratingTTD : Double = json["results"][i]["rating"].doubleValue
+                        let vicinityTTD : String = json["results"][i]["vicinity"].stringValue
+                        let openTTD : Bool = json["results"][i]["opening_hours"]["open_now"].boolValue
+                        print(nameTTD)
+                        print(vicinityTTD)
+                        print(ratingTTD)
+                        print(latTTD,lngTTD)
+                        print(openTTD)
                     }
-                    else{
-                        print("Something wrong")
-                    }
-                    //let json = try JSONSerialization.jsonObject(with: data, options: [])
-                    //print(json)
+                    
                 } catch {
                     print(error)
                 }

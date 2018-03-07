@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import CoreLocation
 import GoogleMaps
 import GooglePlaces
 
@@ -15,8 +16,7 @@ import GooglePlaces
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         GMSServices.provideAPIKey("AIzaSyCd7c2v3p3Vz8IIofevM79jv2YDFiW-IbY")

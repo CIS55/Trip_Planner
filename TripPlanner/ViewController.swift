@@ -9,7 +9,6 @@
 import UIKit
 import CoreLocation
 import MapKit
-import GooglePlacesSearchController
 import GoogleMaps
 import GooglePlaces
 
@@ -44,10 +43,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDel
     let startDate = ["Today", "Tomorrow"]
     let length = ["1", "2", "3", "4", "5"]
     var marker = GMSMarker()
-    var placeLatitude : CLLocationDegrees = -33.86
-    var placeLongitude : CLLocationDegrees = 151.20
+    //var placeLatitude : CLLocationDegrees = -33.86
+    //var placeLongitude : CLLocationDegrees = 151.20
     var begin = "Today"
     var days = 3
+
+    var placeLatitude : CLLocationDegrees = 37.3195
+    var placeLongitude : CLLocationDegrees = 122.0451
     
     //FUNCTIONS
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -87,13 +89,20 @@ class ViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDel
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        
         locationManager = CLLocationManager()
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startMonitoringSignificantLocationChanges()
+        
+        locationManager.requestWhenInUseAuthorization()
+        
+        if( CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedWhenInUse){
+            let currentLocation = locationManager.location
+            placeLatitude = currentLocation!.coordinate.latitude
+            placeLongitude = currentLocation!.coordinate.longitude
+        }
         
         initGoogleMaps()
 
